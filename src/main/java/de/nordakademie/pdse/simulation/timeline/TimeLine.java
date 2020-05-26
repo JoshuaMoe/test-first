@@ -6,19 +6,18 @@ import java.util.List;
 
 public class TimeLine {
     private final List<IEvent> allEvents = new ArrayList<>();
-    private int time = 0;
+    private IEvent currentEvent;
 
     public IEvent next() {
         if(allEvents.isEmpty())
             return null;
-        IEvent currentEvent = allEvents.get(0);
-        time = currentEvent.getTime();
+        currentEvent = allEvents.get(0);
         allEvents.remove(currentEvent);
         return currentEvent;
     }
 
     public void addEvent(IEvent event) {
-        if (event.getTime() < time)
+        if (event.getTime() < now())
             throw new PastEventException();
         allEvents.add(event);
         allEvents.sort(Comparator.comparingInt(IEvent::getTime));
@@ -29,5 +28,9 @@ public class TimeLine {
             IEvent next = next();
             next.execute();
         }
+    }
+
+    private int now () {
+        return currentEvent != null ? currentEvent.getTime() : 0;
     }
 }

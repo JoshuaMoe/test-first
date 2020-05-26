@@ -7,13 +7,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.isNull;
 
 public class TimeLineTest {
     private TimeLine timeLine;
 
     @Before
-    public void beforeTest(){
+    public void beforeTest() {
         timeLine = new TimeLine();
     }
 
@@ -68,8 +67,8 @@ public class TimeLineTest {
         IEvent event5 = new MockEvent(5);
         IEvent event10 = new MockEvent(10);
 
-        timeLine.addEvent(event5);
         timeLine.addEvent(event10);
+        timeLine.addEvent(event5);
         assertThat(timeLine.next(), is(event5));
         assertThat(timeLine.next(), is(event10));
     }
