@@ -2,124 +2,138 @@ package de.nordakademie.pdse.simulation.timeline;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class TimeLineTest {
     private TimeLine timeLine;
+    private IEvent event5;
+    private IEvent event10;
+    private IEvent event15;
 
     @Before
     public void beforeTest() {
         timeLine = new TimeLine();
+        event5 = mock(IEvent.class);
+        event10 = mock(IEvent.class);
+        event15 = mock(IEvent.class);
+
+        when(event5.getTime()).thenReturn(5);
+        when(event10.getTime()).thenReturn(10);
+        when(event15.getTime()).thenReturn(15);
     }
 
     @Test
     public void testAddEventTime0() {
-        IEvent event = new MockEvent(0);
-        timeLine.addEvent(event);
-        assertThat(timeLine.next(), is(event));
+        timeLine.addEvent(event10);
+        timeLine.execute();
+        verify(event10).execute();
     }
 
     @Test(expected = PastEventException.class)
     public void testAddEventNegativeTime() {
-        IEvent event = new MockEvent(-1);
-        timeLine.addEvent(event);
+        when(event10.getTime()).thenReturn(-1);
+        timeLine.addEvent(event10);
+        verify(event10).execute();
     }
 
 
     @Test(expected = PastEventException.class)
     public void testAddEvent10AddEvent5() {
-        IEvent event10 = new MockEvent(10);
-        IEvent event5 = new MockEvent(5);
-
         timeLine.addEvent(event10);
-        assertThat(timeLine.next(), is(event10));
+        timeLine.execute();
         timeLine.addEvent(event5);
+
+        verify(event5).execute();
+        verify(event10).execute();
     }
 
     @Test()
     public void testAddEvent5AddEvent10() {
-        IEvent event5 = new MockEvent(5);
-        IEvent event10 = new MockEvent(10);
-
         timeLine.addEvent(event5);
-        timeLine.next();
         timeLine.addEvent(event10);
-        assertThat(timeLine.next(), is(event10));
+        timeLine.execute();
+
+        verify(event5).execute();
+        verify(event10).execute();
     }
 
     @Test()
     public void testAddEvent10AddEvent10() {
-        IEvent event10_0 = new MockEvent(10);
-        IEvent event10_1 = new MockEvent(10);
+        when(event5.getTime()).thenReturn(10);
 
-        timeLine.addEvent(event10_0);
-        timeLine.next();
-        timeLine.addEvent(event10_1);
-        assertThat(timeLine.next(), is(event10_1));
+        timeLine.addEvent(event5);
+        timeLine.addEvent(event10);
+
+        timeLine.execute();
+
+        verify(event5).execute();
+        verify(event10).execute();
     }
 
     @Test()
     public void testAddEvent5AddEvent10NextNext() {
-        IEvent event5 = new MockEvent(5);
-        IEvent event10 = new MockEvent(10);
-
         timeLine.addEvent(event10);
         timeLine.addEvent(event5);
-        assertThat(timeLine.next(), is(event5));
-        assertThat(timeLine.next(), is(event10));
+        timeLine.execute();
+
+        verify(event5).execute();
+        verify(event10).execute();
     }
 
     @Test()
     public void testAddEvent15AddEvent5AddEvent10() {
-        IEvent event5 = new MockEvent(5);
-        IEvent event10 = new MockEvent(10);
-        IEvent event15 = new MockEvent(15);
-
         timeLine.addEvent(event15);
         timeLine.addEvent(event5);
         timeLine.addEvent(event10);
-        timeLine.next();
-        assertThat(timeLine.next(), is(event10));
+        timeLine.execute();
+
+        verify(event5).execute();
+        verify(event10).execute();
+        verify(event15).execute();
     }
 
     @Test()
     public void testAddEvent5AddEvent10NextNextNext() {
-        IEvent event5 = new MockEvent(5);
-        IEvent event10 = new MockEvent(10);
-
         timeLine.addEvent(event5);
         timeLine.addEvent(event10);
-        timeLine.next();
-        timeLine.next();
-        assertNull(timeLine.next());
+        timeLine.execute();
+
+        verify(event5).execute();
+        verify(event10).execute();
     }
 
     @Test()
     public void testAddEvent15AddEvent5AddEvent10Excecute() {
-        MockEvent event5 = new MockEvent(5);
-        MockEvent event10 = new MockEvent(10);
-        MockEvent event15 = new MockEvent(15);
-
         timeLine.addEvent(event15);
         timeLine.addEvent(event5);
         timeLine.addEvent(event10);
         timeLine.execute();
-        assertTrue(event5.getExecutionOrder() < event10.getExecutionOrder());
-        assertTrue(event10.getExecutionOrder() < event15.getExecutionOrder());
+
+        InOrder inOrder = inOrder(event5, event10, event15);
+        inOrder.verify(event5).execute();
+        inOrder.verify(event10).execute();
+        inOrder.verify(event15).execute();
     }
 
     @Test()
     public void testAddEvent15AddEvent5ThisAddsEvent10Excecute() {
-        MockEvent event5 = new MockEvent2(5, timeLine, 10);
-        MockEvent event15 = new MockEvent(15);
-
+        doAnswer(i -> {
+            timeLine.addEvent(event10);
+            return null;
+        }).when(event5).execute();
         timeLine.addEvent(event15);
         timeLine.addEvent(event5);
         timeLine.execute();
-        assertTrue(event5.getExecutionOrder() < event15.getExecutionOrder());
+
+        InOrder inOrder = inOrder(event5, event10, event15);
+        inOrder.verify(event5).execute();
+        inOrder.verify(event10).execute();
+        inOrder.verify(event15).execute();
     }
 }

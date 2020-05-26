@@ -8,7 +8,7 @@ public class TimeLine {
     private final List<IEvent> allEvents = new ArrayList<>();
     private IEvent currentEvent;
 
-    public IEvent next() {
+    private IEvent next() {
         if(allEvents.isEmpty())
             return null;
         currentEvent = allEvents.get(0);
