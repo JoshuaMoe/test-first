@@ -108,20 +108,18 @@ public class TimeLineTest {
         timeLine.addEvent(event5);
         timeLine.addEvent(event10);
         timeLine.execute();
-        assertTrue(event5.timeExecuteCalled() < event10.timeExecuteCalled());
-        assertTrue(event10.timeExecuteCalled() < event15.timeExecuteCalled());
+        assertTrue(event5.getExecutionOrder() < event10.getExecutionOrder());
+        assertTrue(event10.getExecutionOrder() < event15.getExecutionOrder());
     }
 
     @Test()
     public void testAddEvent15AddEvent5ThisAddsEvent10Excecute() {
-        MockEvent event10 = new MockEvent(10);
-        MockEvent event5 = new MockEvent(5, () -> timeLine.addEvent(event10));
+        MockEvent event5 = new MockEvent2(5, timeLine, 10);
         MockEvent event15 = new MockEvent(15);
 
         timeLine.addEvent(event15);
         timeLine.addEvent(event5);
         timeLine.execute();
-        assertTrue(event5.timeExecuteCalled() < event10.timeExecuteCalled());
-        assertTrue(event10.timeExecuteCalled() < event15.timeExecuteCalled());
+        assertTrue(event5.getExecutionOrder() < event15.getExecutionOrder());
     }
 }

@@ -24,9 +24,8 @@ public class TimeLine {
     }
 
     public void execute() {
-        while (!allEvents.isEmpty()) {
-            IEvent next = next();
-            next.execute();
+        while (next() != null) {
+            currentEvent.execute();
         }
     }
 
