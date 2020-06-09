@@ -29,7 +29,7 @@ public class TimeLine {
         }
     }
 
-    private int now () {
+    public int now () {
         return currentEvent != null ? currentEvent.getTime() : 0;
     }
 }

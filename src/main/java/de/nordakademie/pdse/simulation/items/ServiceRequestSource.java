@@ -43,7 +43,7 @@ public class ServiceRequestSource implements ISimulationItem {
     @Override
     public void addSuccessor(ISimulationItem successor) {
         if (this.successor != null)
-            throw new NoMoreSuccessorException();
+            throw new NoMoreConnectorsException();
         this.successor = successor;
     }
 

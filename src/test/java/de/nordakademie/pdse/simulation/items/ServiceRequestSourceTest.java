@@ -5,8 +5,6 @@ import de.nordakademie.pdse.simulation.timeline.*;
 import org.junit.*;
 import org.mockito.ArgumentCaptor;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static org.mockito.Mockito.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,7 +24,7 @@ public class ServiceRequestSourceTest {
         iSimulationItem = mock(ISimulationItem.class);
     }
 
-    @Test(expected = NoMoreSuccessorException.class)
+    @Test(expected = NoMoreConnectorsException.class)
     public void testAddTwoSuccessor() {
         serviceRequestSource.addSuccessor(iSimulationItem);
         serviceRequestSource.addSuccessor(iSimulationItem);
